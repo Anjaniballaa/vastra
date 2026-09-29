@@ -1,0 +1,16 @@
+fastapi==0.141.1
+uvicorn[standard]
+sqlalchemy==2.1.1
+psycopg[binary]==3.3.6
+pyjwt
+bcrypt
+groq==1.7.0
+hindsight-client==0.10.2
+apscheduler==3.11.3
+twilio==9.11.2
+httpx
+python-dotenv
+cloudinary
+python-multipart
+email-validator
+pandas

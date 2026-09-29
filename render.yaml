@@ -1,0 +1,89 @@
+# Render Blueprint: Dashboard → New → Blueprint → pick this repo.
+# Secrets are marked sync:false — Render asks for them on first deploy.
+services:
+  - type: web
+    name: vastra-api
+    runtime: python
+    region: singapore
+    plan: starter          # keeps the alarm scheduler & inbox poller running 24/7 (free plan sleeps)
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: APP_ENV
+        value: production
+      - key: APP_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://vastra.algearithm.xyz
+      - key: PUBLIC_API_URL
+        value: https://api.algearithm.xyz
+      - key: DATABASE_URL
+        sync: false
+      - key: HINDSIGHT_API_URL
+        value: https://api.hindsight.vectorize.io
+      - key: HINDSIGHT_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL_MAIN
+        value: openai/gpt-oss-120b
+      - key: GROQ_MODEL_FAST
+        value: openai/gpt-oss-20b
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: EMAIL_PROVIDER
+        value: gmail
+      - key: EMAIL_FROM_NAME
+        value: Vastra Support
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        value: support@algearithm.xyz
+      - key: GMAIL_ADDRESS
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        value: whatsapp:+14155238886
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+      - key: TWILIO_VOICE_ENABLED
+        value: "false"
+      - key: TWILIO_VALIDATE_SIGNATURE
+        value: "true"
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_NAME
+        sync: false
+      - key: BOOTSTRAP_ADMIN_PASSWORD
+        sync: false
+
+  - type: web
+    name: vastra-web
+    runtime: node
+    region: singapore
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start -- -p $PORT
+    envVars:
+      - key: NODE_VERSION
+        value: "20.20.2"
+      - key: NEXT_PUBLIC_API_URL
+        value: https://api.algearithm.xyz
