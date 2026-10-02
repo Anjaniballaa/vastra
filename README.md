@@ -79,7 +79,7 @@ cd backend
 python -m venv .venv && .venv/Scripts/activate      # Windows; use source .venv/bin/activate on macOS/Linux
 pip install -r requirements.txt
 cp .env.example .env                                 # fill in your keys
-python -m scripts.import_catalog --zip path/to/myntra-products-dataset.zip   # one-time real catalogue import
+pip install pandas && python -m scripts.import_catalog --zip path/to/myntra-products-dataset.zip   # one-time real catalogue import
 uvicorn app.main:app --reload
 
 # frontend
@@ -92,12 +92,24 @@ npm install && npm run dev
 - Without email configured (development only), the login page shows the OTP on screen.
 - `python -m scripts.smoke_test` runs an end-to-end check against a running API with temporary accounts, and deletes everything it created.
 
-## Deploy (Render)
+## Deploy (free tiers)
 
-1. Push this repo to GitHub. In Render, choose **New → Blueprint** and select the repo. `render.yaml` creates `vastra-api` and `vastra-web` in Singapore.
-2. Fill in the secret environment variables when prompted.
-3. Add custom domains: `api.<your-domain>` on vastra-api and `vastra.<your-domain>` on vastra-web. Add the CNAME records Render shows at your DNS provider.
-4. Twilio → WhatsApp sandbox settings → set *When a message comes in* to `https://api.<your-domain>/api/twilio/whatsapp`.
+**API on Render (free web service)**
+- New → Web Service, root directory `backend`, region Singapore.
+- Build command: `pip install -r requirements.txt`.
+- Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"`.
+- Health check: `/api/health`.
+- Environment variables are listed in `render.yaml`.
+- Add the custom domain `api.<your-domain>`.
+
+**Frontend on Vercel (Hobby, free)**
+- Import the repo with root directory `frontend`.
+- Set `NEXT_PUBLIC_API_URL=https://api.<your-domain>`.
+- Add the custom domain `vastra.<your-domain>`.
+
+**Keep the free API awake.** Render's free plan sleeps after 15 idle minutes, which pauses the incident scheduler. A free monitor (cron-job.org or UptimeRobot) calling `https://api.<your-domain>/api/health` every 10 minutes keeps it running. That's about 744 of Render's 750 free hours a month.
+
+**WhatsApp.** In Twilio's WhatsApp sandbox settings, set *When a message comes in* to `https://api.<your-domain>/api/twilio/whatsapp`.
 
 ## Data & licences
 

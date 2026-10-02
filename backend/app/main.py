@@ -77,7 +77,8 @@ app = FastAPI(title="Vastra API", version="1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=list({config.FRONTEND_URL, "http://localhost:3000", "http://127.0.0.1:3000"}),
-    allow_origin_regex=r"https://vastra-web[a-z0-9-]*\.onrender\.com",  # Render's default URL before the custom domain
+    # Vercel's default/preview URLs, usable before the custom domain is connected
+    allow_origin_regex=r"https://vastra[a-z0-9-]*\.vercel\.app",
     allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
 )
 for r in (auth, catalog, shop, support, staff, ops, catalog_admin, admin, twilio_hooks):

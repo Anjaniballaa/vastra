@@ -1,11 +1,12 @@
-# Render Blueprint: Dashboard → New → Blueprint → pick this repo.
-# Secrets are marked sync:false — Render asks for them on first deploy.
+# Reference config for the API on Render's free plan.
+# Create it by hand (New → Web Service) with these settings — Blueprints need a paid workspace.
+# The frontend is deployed on Vercel (free); see README → Deploy.
 services:
   - type: web
     name: vastra-api
     runtime: python
     region: singapore
-    plan: starter          # keeps the alarm scheduler & inbox poller running 24/7 (free plan sleeps)
+    plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
@@ -21,69 +22,36 @@ services:
         value: https://vastra.algearithm.xyz
       - key: PUBLIC_API_URL
         value: https://api.algearithm.xyz
-      - key: DATABASE_URL
-        sync: false
       - key: HINDSIGHT_API_URL
         value: https://api.hindsight.vectorize.io
-      - key: HINDSIGHT_API_KEY
-        sync: false
-      - key: GROQ_API_KEY
-        sync: false
       - key: GROQ_MODEL_MAIN
         value: openai/gpt-oss-120b
       - key: GROQ_MODEL_FAST
         value: openai/gpt-oss-20b
-      - key: RAZORPAY_KEY_ID
-        sync: false
-      - key: RAZORPAY_KEY_SECRET
-        sync: false
-      - key: CLOUDINARY_CLOUD_NAME
-        sync: false
-      - key: CLOUDINARY_API_KEY
-        sync: false
-      - key: CLOUDINARY_API_SECRET
-        sync: false
       - key: EMAIL_PROVIDER
         value: resend
       - key: EMAIL_FROM_NAME
         value: Vastra Support
-      - key: RESEND_API_KEY
-        sync: false
       - key: RESEND_FROM
         value: support@algearithm.xyz
-      - key: GMAIL_ADDRESS
-        sync: false
-      - key: GMAIL_APP_PASSWORD
-        sync: false
-      - key: TWILIO_ACCOUNT_SID
-        sync: false
-      - key: TWILIO_AUTH_TOKEN
-        sync: false
       - key: TWILIO_WHATSAPP_FROM
         value: whatsapp:+14155238886
-      - key: TWILIO_PHONE_NUMBER
-        sync: false
       - key: TWILIO_VOICE_ENABLED
         value: "false"
       - key: TWILIO_VALIDATE_SIGNATURE
         value: "true"
-      - key: BOOTSTRAP_ADMIN_EMAIL
-        sync: false
-      - key: BOOTSTRAP_ADMIN_NAME
-        sync: false
-      - key: BOOTSTRAP_ADMIN_PASSWORD
-        sync: false
-
-  - type: web
-    name: vastra-web
-    runtime: node
-    region: singapore
-    plan: free
-    rootDir: frontend
-    buildCommand: npm ci && npm run build
-    startCommand: npm run start -- -p $PORT
-    envVars:
-      - key: NODE_VERSION
-        value: "20.20.2"
-      - key: NEXT_PUBLIC_API_URL
-        value: https://api.algearithm.xyz
+      # secrets — copy the values from backend/.env
+      - { key: DATABASE_URL, sync: false }
+      - { key: HINDSIGHT_API_KEY, sync: false }
+      - { key: GROQ_API_KEY, sync: false }
+      - { key: RAZORPAY_KEY_ID, sync: false }
+      - { key: RAZORPAY_KEY_SECRET, sync: false }
+      - { key: CLOUDINARY_CLOUD_NAME, sync: false }
+      - { key: CLOUDINARY_API_KEY, sync: false }
+      - { key: CLOUDINARY_API_SECRET, sync: false }
+      - { key: RESEND_API_KEY, sync: false }
+      - { key: TWILIO_ACCOUNT_SID, sync: false }
+      - { key: TWILIO_AUTH_TOKEN, sync: false }
+      - { key: BOOTSTRAP_ADMIN_EMAIL, sync: false }
+      - { key: BOOTSTRAP_ADMIN_NAME, sync: false }
+      - { key: BOOTSTRAP_ADMIN_PASSWORD, sync: false }
