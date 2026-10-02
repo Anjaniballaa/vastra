@@ -59,11 +59,21 @@ function Shop() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
+  const [loadingMore, setLoadingMore] = useState(false);
   const loadMore = async () => {
-    const next = page + 1;
-    const d = await api("/api/products", { query: { ...Object.fromEntries(params.entries()), page: next } });
-    setItems((x) => [...x, ...d.items]);
-    setPage(next);
+    if (loadingMore) return; // a second click while a page is loading would fetch the same page twice
+    setLoadingMore(true);
+    try {
+      const next = page + 1;
+      const d = await api("/api/products", { query: { ...Object.fromEntries(params.entries()), page: next } });
+      setItems((x) => {
+        const seen = new Set(x.map((p) => p.id));
+        return [...x, ...d.items.filter((p: any) => !seen.has(p.id))];
+      });
+      setPage(next);
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   const set = (k: string, v: string | null) => {
@@ -237,7 +247,7 @@ function Shop() {
               </div>
               {items.length < data.total && (
                 <div className="mt-10 text-center">
-                  <Button variant="outline" onClick={loadMore}>
+                  <Button variant="outline" onClick={loadMore} loading={loadingMore}>
                     Show more ({data.total - items.length} left)
                   </Button>
                 </div>

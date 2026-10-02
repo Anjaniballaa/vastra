@@ -44,7 +44,7 @@ services:
       - key: CLOUDINARY_API_SECRET
         sync: false
       - key: EMAIL_PROVIDER
-        value: gmail
+        value: resend
       - key: EMAIL_FROM_NAME
         value: Vastra Support
       - key: RESEND_API_KEY
